@@ -41,8 +41,18 @@ _flutter.buildConfig = {"engineRevision":"251f4a8d5b9f2577212b94379c1711dbdf4b7a
 
 
 (function() {
-  // Let Flutter auto-detect the best renderer for iOS Safari compatibility
+  // Detect Safari on iOS, iPadOS (desktop UA), and macOS; force HTML renderer to avoid CanvasKit
+  const ua = navigator.userAgent || '';
+  const isSafari = /Safari/.test(ua) && !/Chrome|Chromium|CriOS|Android/.test(ua);
+  const isIOS = /iPad|iPhone|iPod/.test(ua);
+  const isIPadDesktopUA = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPadOS 13+
+  const isAppleSafari = isSafari && (isIOS || isIPadDesktopUA || /Mac OS X/.test(ua));
+
   const userConfig = {};
+  if (isAppleSafari) {
+    userConfig.renderer = 'html';
+    console.log('[bootstrap] Safari on Apple device detected, using HTML renderer');
+  }
 
   // Enhanced error handling for iOS Safari compatibility
   _flutter.loader.load({

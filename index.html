@@ -23,9 +23,11 @@
   <meta name="theme-color" content="#0ea5e9">
   <!-- Let Flutter auto-detect the best renderer for iOS Safari -->
   <meta name="flutter-auto-detect" content="true">
+  <!-- Renderer selection: keep 'auto' globally; Safari will be forced to HTML via bootstrap -->
+  <meta name="flutter-web-renderer" content="auto">
   
   <!-- iOS Safari specific meta tags -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com https://www.gstatic.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://www.gstatic.com; worker-src 'self' blob:;">
   <meta name="format-detection" content="telephone=no">
   <meta name="format-detection" content="date=no">
   <meta name="format-detection" content="address=no">
