@@ -35,19 +35,20 @@
   <link rel="manifest" href="./manifest.json">
 </head>
 <body>
+  <script src="flutter.js" defer></script>
   <script>
     window.addEventListener('load', function(ev) {
+      // Download main.dart.js
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
         }
       }).then(function(engineInitializer) {
-        return engineInitializer.intializeEngine();
+        return engineInitializer.initializeEngine({ renderer: 'html' });
       }).then(function(appRunner) {
         return appRunner.runApp();
       });
     });
-
   </script>
 </body>
 </html>
