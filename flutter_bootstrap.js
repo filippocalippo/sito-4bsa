@@ -46,8 +46,6 @@ _flutter.buildConfig = {"engineRevision":"251f4a8d5b9f2577212b94379c1711dbdf4b7a
 
   // Optional: surface bootstrap progress in console for debugging
   _flutter.loader.load({
-    // Disable service worker while debugging iOS Safari issues to avoid stale caches
-    serviceWorkerSettings: { serviceWorkerVersion: null },
     config: userConfig,
     onEntrypointLoaded: async function(engineInitializer) {
       try {
