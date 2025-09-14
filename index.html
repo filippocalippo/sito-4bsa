@@ -44,9 +44,9 @@
           serviceWorkerVersion: null,
         },
         onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine({
-            renderer: 'html' // Force HTML renderer
-          }).then(function(appRunner) {
+          // Let Flutter auto-select the best renderer (HTML/CanvasKit)
+          // Avoid forcing HTML, which can cause issues on some Safari builds
+          engineInitializer.initializeEngine().then(function(appRunner) {
             appRunner.runApp();
           });
         }
