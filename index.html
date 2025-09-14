@@ -23,6 +23,7 @@
   <meta name="theme-color" content="#0ea5e9">
   <!-- Force HTML renderer to improve compatibility on iOS Safari -->
   <meta name="flutter-renderer" content="html">
+  <meta name="flutter-auto-detect" content="false">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -37,6 +38,36 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <!-- Guard against iOS Safari Private Mode localStorage exceptions -->
+  <script>
+    (function () {
+      function wrap(method) {
+        var original = Storage.prototype[method];
+        if (!original) return;
+        Storage.prototype[method] = function () {
+          try {
+            return original.apply(this, arguments);
+          } catch (e) {
+            console.warn('localStorage.' + method + ' blocked; returning safe fallback:', e);
+            // getItem should return null on failure; others return undefined
+            if (method === 'getItem') return null;
+            return undefined;
+          }
+        };
+      }
+      // Attempt a quick test first; if it throws, our wrappers will catch subsequent calls
+      try {
+        window.localStorage.setItem('__ls_test__', '1');
+        window.localStorage.removeItem('__ls_test__');
+      } catch (e) {
+        console.warn('localStorage not writable; applying safe wrappers');
+      }
+      wrap('setItem');
+      wrap('getItem');
+      wrap('removeItem');
+      wrap('clear');
+    })();
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
