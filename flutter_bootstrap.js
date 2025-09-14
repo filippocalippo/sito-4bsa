@@ -1,6 +1,3 @@
-// Custom bootstrap to enforce renderer and add basic diagnostics.
-// Docs: https://docs.flutter.dev/platform-integration/web/initialization
-
 (()=>{var L={blink:!0,gecko:!1,webkit:!1,unknown:!1},R=()=>navigator.vendor==="Google Inc."||navigator.userAgent.includes("Edg/")?"blink":navigator.vendor==="Apple Computer, Inc."?"webkit":navigator.vendor===""&&navigator.userAgent.includes("Firefox")?"gecko":"unknown",C=R(),K=()=>typeof ImageDecoder>"u"?!1:C==="blink",B=()=>typeof Intl.v8BreakIterator<"u"&&typeof Intl.Segmenter<"u",z=()=>{let i=[0,97,115,109,1,0,0,0,1,5,1,95,1,120,0];return WebAssembly.validate(new Uint8Array(i))},M=()=>{let i=document.createElement("canvas");return i.width=1,i.height=1,i.getContext("webgl2")!=null?2:i.getContext("webgl")!=null?1:-1},w={browserEngine:C,hasImageCodecs:K(),hasChromiumBreakIterators:B(),supportsWasmGC:z(),crossOriginIsolated:window.crossOriginIsolated,webGLVersion:M()};function c(...i){return new URL(T(...i),document.baseURI).toString()}function T(...i){return i.filter(e=>!!e).map((e,r)=>r===0?I(e):D(I(e))).filter(e=>e.length).join("/")}function D(i){let e=0;for(;e<i.length&&i.charAt(e)==="/";)e++;return i.substring(e)}function I(i){let e=i.length;for(;e>0&&i.charAt(e-1)==="/";)e--;return i.substring(0,e)}function U(i,e){return i.canvasKitBaseUrl?i.canvasKitBaseUrl:e.engineRevision&&!e.useLocalCanvasKit?T("https://www.gstatic.com/flutter-canvaskit",e.engineRevision):"canvaskit"}var v=class{constructor(){this._scriptLoaded=!1}setTrustedTypesPolicy(e){this._ttPolicy=e}async loadEntrypoint(e){let{entrypointUrl:r=c("main.dart.js"),onEntrypointLoaded:t,nonce:n}=e||{};return this._loadJSEntrypoint(r,t,n)}async load(e,r,t,n,s){s??=u=>{u.initializeEngine(t).then(m=>m.runApp())};let{entrypointBaseUrl:a}=t,{entryPointBaseUrl:o}=t;if(!a&&o&&(console.warn("[deprecated] `entryPointBaseUrl` is deprecated and will be removed in a future release. Use `entrypointBaseUrl` instead."),a=o),e.compileTarget==="dart2wasm")return this._loadWasmEntrypoint(e,r,a,s);{let u=e.mainJsPath??"main.dart.js",m=c(a,u);return this._loadJSEntrypoint(m,s,n)}}didCreateEngineInitializer(e){typeof this._didCreateEngineInitializerResolve=="function"&&(this._didCreateEngineInitializerResolve(e),this._didCreateEngineInitializerResolve=null,delete _flutter.loader.didCreateEngineInitializer),typeof this._onEntrypointLoaded=="function"&&this._onEntrypointLoaded(e)}_loadJSEntrypoint(e,r,t){let n=typeof r=="function";if(!this._scriptLoaded){this._scriptLoaded=!0;let s=this._createScriptTag(e,t);if(n)console.debug("Injecting <script> tag. Using callback."),this._onEntrypointLoaded=r,document.head.append(s);else return new Promise((a,o)=>{console.debug("Injecting <script> tag. Using Promises. Use the callback approach instead!"),this._didCreateEngineInitializerResolve=a,s.addEventListener("error",o),document.head.append(s)})}}async _loadWasmEntrypoint(e,r,t,n){if(!this._scriptLoaded){this._scriptLoaded=!0,this._onEntrypointLoaded=n;let{mainWasmPath:s,jsSupportRuntimePath:a}=e,o=c(t,s),u=c(t,a);this._ttPolicy!=null&&(u=this._ttPolicy.createScriptURL(u));let p=(await import(u)).compileStreaming(fetch(o)),l;e.renderer==="skwasm"?l=(async()=>{let d=await r.skwasm;return window._flutter_skwasmInstance=d,{skwasm:d.wasmExports,skwasmWrapper:d,ffi:{memory:d.wasmMemory}}})():l=Promise.resolve({}),await(await(await p).instantiate(await l,{loadDynamicModule:async(d,S)=>{let x=fetch(c(t,d)),_=c(t,S);this._ttPolicy!=null&&(_=this._ttPolicy.createScriptURL(_));let A=import(_);return[await x,await A]}})).invokeMain()}}_createScriptTag(e,r){let t=document.createElement("script");t.type="application/javascript",r&&(t.nonce=r);let n=e;return this._ttPolicy!=null&&(n=this._ttPolicy.createScriptURL(e)),t.src=n,t}};async function E(i,e,r){if(e<0)return i;let t,n=new Promise((s,a)=>{t=setTimeout(()=>{a(new Error(`${r} took more than ${e}ms to resolve. Moving on.`,{cause:E}))},e)});return Promise.race([i,n]).finally(()=>{clearTimeout(t)})}var h=class{setTrustedTypesPolicy(e){this._ttPolicy=e}loadServiceWorker(e){if(!e)return console.debug("Null serviceWorker configuration. Skipping."),Promise.resolve();if(!("serviceWorker"in navigator)){let o="Service Worker API unavailable.";return window.isSecureContext||(o+=`
 The current context is NOT secure.`,o+=`
 Read more: https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts`),Promise.reject(new Error(o))}let{serviceWorkerVersion:r,serviceWorkerUrl:t=c(`flutter_service_worker.js?v=${r}`),timeoutMillis:n=4e3}=e,s=t;this._ttPolicy!=null&&(s=this._ttPolicy.createScriptURL(s));let a=navigator.serviceWorker.register(s).then(o=>this._getNewServiceWorker(o,r)).then(this._waitForServiceWorkerActivation);return E(a,n,"prepareServiceWorker")}async _getNewServiceWorker(e,r){if(!e.active&&(e.installing||e.waiting))return console.debug("Installing/Activating first service worker."),e.installing||e.waiting;if(e.active.scriptURL.endsWith(r))return console.debug("Loading from existing service worker."),e.active;{let t=await e.update();return console.debug("Updating service worker."),t.installing||t.waiting||t.active}}async _waitForServiceWorkerActivation(e){if(!e||e.state==="activated")if(e){console.debug("Service worker already active.");return}else throw new Error("Cannot activate a null service worker!");return new Promise((r,t)=>{e.addEventListener("statechange",()=>{e.state==="activated"&&(console.debug("Activated new service worker."),r())})})}};var g=class{constructor(e,r="flutter-js"){let t=e||[/\.js$/,/\.mjs$/];window.trustedTypes&&(this.policy=trustedTypes.createPolicy(r,{createScriptURL:function(n){if(n.startsWith("blob:"))return n;let s=new URL(n,window.location),a=s.pathname.split("/").pop();if(t.some(u=>u.test(a)))return s.toString();console.error("URL rejected by TrustedTypes policy",r,":",n,"(download prevented)")}}))}};var k=i=>{let e=WebAssembly.compileStreaming(fetch(i));return(r,t)=>((async()=>{let n=await e,s=await WebAssembly.instantiate(n,r);t(s,n)})(),{})};var W=(i,e,r,t)=>(window.flutterCanvasKitLoaded=(async()=>{if(window.flutterCanvasKit)return window.flutterCanvasKit;let n=r.hasChromiumBreakIterators&&r.hasImageCodecs;if(!n&&e.canvasKitVariant=="chromium")throw"Chromium CanvasKit variant specifically requested, but unsupported in this browser";let s=n&&e.canvasKitVariant!=="full",a=t;e.canvasKitVariant=="experimentalWebParagraph"?a=c(a,"experimental_webparagraph"):s&&(a=c(a,"chromium"));let o=c(a,"canvaskit.js");i.flutterTT.policy&&(o=i.flutterTT.policy.createScriptURL(o));let u=k(c(a,"canvaskit.wasm")),m=await import(o);return window.flutterCanvasKit=await m.default({instantiateWasm:u}),window.flutterCanvasKit})(),window.flutterCanvasKitLoaded);var P=async(i,e,r,t)=>{let s=!r.hasImageCodecs||!r.hasChromiumBreakIterators?"skwasm_heavy":"skwasm",a=c(t,`${s}.js`),o=a;i.flutterTT.policy&&(o=i.flutterTT.policy.createScriptURL(o));let u=k(c(t,`${s}.wasm`));return await(await import(o)).default({skwasmSingleThreaded:!r.crossOriginIsolated||e.forceSingleThreadedSkwasm,instantiateWasm:u,locateFile:(p,l)=>{if(p.endsWith(".ww.js")){let y=c(t,p);return URL.createObjectURL(new Blob([`
@@ -39,72 +36,8 @@ if (!window._flutter) {
 }
 _flutter.buildConfig = {"engineRevision":"251f4a8d5b9f2577212b94379c1711dbdf4b7a7a","builds":[{"compileTarget":"dart2js","renderer":"canvaskit","mainJsPath":"main.dart.js"},{}]};
 
-
-(function() {
-  // Detect Safari on iOS, iPadOS (desktop UA), and macOS; force HTML renderer to avoid CanvasKit
-  const ua = navigator.userAgent || '';
-  const isSafari = /Safari/.test(ua) && !/Chrome|Chromium|CriOS|Android/.test(ua);
-  const isIOS = /iPad|iPhone|iPod/.test(ua);
-  const isIPadDesktopUA = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPadOS 13+
-  const isAppleSafari = isSafari && (isIOS || isIPadDesktopUA || /Mac OS X/.test(ua));
-
-  const userConfig = {};
-  if (isAppleSafari) {
-    userConfig.renderer = 'html';
-    console.log('[bootstrap] Safari on Apple device detected, using HTML renderer');
+_flutter.loader.load({
+  serviceWorkerSettings: {
+    serviceWorkerVersion: "682905513"
   }
-
-  // Enhanced error handling for iOS Safari compatibility
-  _flutter.loader.load({
-    config: userConfig,
-    onEntrypointLoaded: async function(engineInitializer) {
-      try {
-        console.log('[bootstrap] Initializing engine...');
-        
-        // Hide loading screen when engine starts
-        const loadingEl = document.getElementById('loading');
-        if (loadingEl) {
-          loadingEl.style.display = 'none';
-        }
-        
-        const appRunner = await engineInitializer.initializeEngine({
-          // Minimal config for better iOS Safari compatibility
-          hostElement: document.body,
-        });
-        console.log('[bootstrap] Running app...');
-        await appRunner.runApp();
-        console.log('[bootstrap] App started.');
-        
-      } catch (e) {
-        console.error('[bootstrap] Failed to start app:', e);
-        
-        // Hide loading screen on error
-        const loadingEl = document.getElementById('loading');
-        if (loadingEl) {
-          loadingEl.style.display = 'none';
-        }
-        
-        // Show user-friendly error message on iOS Safari
-        const errorDiv = document.createElement('div');
-        errorDiv.style.cssText = `
-          position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-          background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-          max-width: 90%; text-align: center; z-index: 99999; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-          border: 1px solid #ddd;
-        `;
-        errorDiv.innerHTML = `
-          <h3 style="color: #d32f2f; margin: 0 0 10px;">App Loading Error</h3>
-          <p style="margin: 0; color: #666;">
-            Please try refreshing the page or clearing browser cache.
-            <br><small>iOS Safari: Try disabling Private Mode or use a different browser.</small>
-          </p>
-          <button onclick="window.location.reload()" style="
-            margin-top: 15px; padding: 8px 16px; background: #0ea5e9; color: white;
-            border: none; border-radius: 4px; cursor: pointer; font-size: 14px;
-          ">Refresh Page</button>
-        `;
-        document.body.appendChild(errorDiv);
-      }
-    }
-  });
-})();
+});

@@ -18,155 +18,36 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="description" content="A new Flutter project.">
   <meta name="theme-color" content="#0ea5e9">
-  <!-- Let Flutter auto-detect the best renderer for iOS Safari -->
-  <meta name="flutter-auto-detect" content="true">
-  <!-- Renderer selection: keep 'auto' globally; Safari will be forced to HTML via bootstrap -->
-  <meta name="flutter-web-renderer" content="auto">
-  
-  <!-- iOS Safari specific meta tags -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com https://www.gstatic.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://www.gstatic.com; worker-src 'self' blob:;">
-  <meta name="format-detection" content="telephone=no">
-  <meta name="format-detection" content="date=no">
-  <meta name="format-detection" content="address=no">
-  <meta name="format-detection" content="email=no">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="app">
-  <meta name="apple-touch-fullscreen" content="yes">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
   <title>app</title>
-  <link rel="manifest" href="manifest.json">
-  
-  <!-- Preload fallback fonts for iOS Safari -->
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=fallback');
-    
-    /* Fallback font stack for iOS Safari */
-    body, html {
-      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
-    }
-    
-    /* Loading screen while Flutter initializes */
-    #loading {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    
-    .loading-text {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      color: #666;
-      font-size: 16px;
-    }
-  </style>
+  <link rel="manifest" href="./manifest.json">
 </head>
 <body>
-  <!-- Loading screen for iOS Safari -->
-  <div id="loading">
-    <div class="loading-text">Loading...</div>
-  </div>
-  
-  <!-- Guard against iOS Safari Private Mode localStorage exceptions -->
   <script>
-    (function () {
-      function wrap(method) {
-        var original = Storage.prototype[method];
-        if (!original) return;
-        Storage.prototype[method] = function () {
-          try {
-            return original.apply(this, arguments);
-          } catch (e) {
-            console.warn('localStorage.' + method + ' blocked; returning safe fallback:', e);
-            // getItem should return null on failure; others return undefined
-            if (method === 'getItem') return null;
-            return undefined;
-          }
-        };
-      }
-      // Attempt a quick test first; if it throws, our wrappers will catch subsequent calls
-      try {
-        window.localStorage.setItem('__ls_test__', '1');
-        window.localStorage.removeItem('__ls_test__');
-      } catch (e) {
-        console.warn('localStorage not writable; applying safe wrappers');
-      }
-      wrap('setItem');
-      wrap('getItem');
-      wrap('removeItem');
-      wrap('clear');
-    })();
-  </script>
-  <!-- Minimal on-screen error overlay to diagnose iOS Safari issues -->
-  <style>
-    #flutter-error-overlay { position: fixed; bottom: 8px; left: 8px; right: 8px; max-height: 40vh; overflow:auto; background: rgba(0,0,0,0.8); color: #fff; font: 12px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif; padding: 8px 10px; border-radius: 8px; z-index: 99999; display:none; }
-    #flutter-error-overlay b { color: #ffb4b4; }
-  </style>
-  <script>
-    (function(){
-      var el = document.createElement('div');
-      el.id = 'flutter-error-overlay';
-      document.addEventListener('DOMContentLoaded', function(){ document.body.appendChild(el); });
-      function show(msg){
-        el.style.display = 'block';
-        var now = new Date().toISOString().split('T')[1].split('.')[0];
-        el.innerHTML += '<div><b>['+now+']</b> ' + msg + '</div>';
-      }
-      // Mirror console.error/warn to overlay for better diagnostics on iOS Safari
-      (function(){
-        var origErr = console.error;
-        console.error = function(){
-          try {
-            var msg = Array.prototype.map.call(arguments, function(a){
-              try { return (a && a.stack) ? a.stack.toString() : String(a); } catch(_) { return '[object]'; }
-            }).join(' ');
-            show('ConsoleError: ' + msg);
-          } catch(_) {}
-          return origErr.apply(console, arguments);
-        };
-        var origWarn = console.warn;
-        console.warn = function(){
-          try {
-            var msg = Array.prototype.map.call(arguments, function(a){
-              try { return (a && a.stack) ? a.stack.toString() : String(a); } catch(_) { return '[object]'; }
-            }).join(' ');
-            show('ConsoleWarn: ' + msg);
-          } catch(_) {}
-          return origWarn.apply(console, arguments);
-        };
-      })();
-      window.addEventListener('error', function(e){
-        var base = 'Error: ' + (e.message || e.error || 'unknown');
-        var loc = ' at ' + (e.filename||'') + ':' + (e.lineno||'') + ':' + (e.colno||'');
-        var stack = '';
-        if (e.error && e.error.stack) {
-          stack = '\n' + e.error.stack.toString().split('\n').slice(0,4).join('\n');
+    window.addEventListener('load', function(ev) {
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
         }
-        show(base + loc + stack);
+      }).then(function(engineInitializer) {
+        return engineInitializer.intializeEngine();
+      }).then(function(appRunner) {
+        return appRunner.runApp();
       });
-      window.addEventListener('unhandledrejection', function(e){
-        var r = e.reason;
-        var txt = (r && (r.stack || r.message || r.toString())) || 'unknown promise rejection';
-        show('UnhandledRejection: ' + txt);
-      });
-    })();
+    });
+
   </script>
-  <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
