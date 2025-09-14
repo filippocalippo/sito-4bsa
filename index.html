@@ -18,17 +18,25 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="description" content="A new Flutter project.">
   <meta name="theme-color" content="#0ea5e9">
-  <!-- Force HTML renderer to improve compatibility on iOS Safari -->
-  <meta name="flutter-renderer" content="html">
-  <meta name="flutter-auto-detect" content="false">
+  <!-- Let Flutter auto-detect the best renderer for iOS Safari -->
+  <meta name="flutter-auto-detect" content="true">
+  
+  <!-- iOS Safari specific meta tags -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval';">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="format-detection" content="date=no">
+  <meta name="format-detection" content="address=no">
+  <meta name="format-detection" content="email=no">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="app">
+  <meta name="apple-touch-fullscreen" content="yes">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
@@ -83,11 +91,41 @@
         var now = new Date().toISOString().split('T')[1].split('.')[0];
         el.innerHTML += '<div><b>['+now+']</b> ' + msg + '</div>';
       }
+      // Mirror console.error/warn to overlay for better diagnostics on iOS Safari
+      (function(){
+        var origErr = console.error;
+        console.error = function(){
+          try {
+            var msg = Array.prototype.map.call(arguments, function(a){
+              try { return (a && a.stack) ? a.stack.toString() : String(a); } catch(_) { return '[object]'; }
+            }).join(' ');
+            show('ConsoleError: ' + msg);
+          } catch(_) {}
+          return origErr.apply(console, arguments);
+        };
+        var origWarn = console.warn;
+        console.warn = function(){
+          try {
+            var msg = Array.prototype.map.call(arguments, function(a){
+              try { return (a && a.stack) ? a.stack.toString() : String(a); } catch(_) { return '[object]'; }
+            }).join(' ');
+            show('ConsoleWarn: ' + msg);
+          } catch(_) {}
+          return origWarn.apply(console, arguments);
+        };
+      })();
       window.addEventListener('error', function(e){
-        show('Error: ' + (e.message || e.error || 'unknown') + ' at ' + (e.filename||'') + ':' + (e.lineno||'') + ':' + (e.colno||''));
+        var base = 'Error: ' + (e.message || e.error || 'unknown');
+        var loc = ' at ' + (e.filename||'') + ':' + (e.lineno||'') + ':' + (e.colno||'');
+        var stack = '';
+        if (e.error && e.error.stack) {
+          stack = '\n' + e.error.stack.toString().split('\n').slice(0,4).join('\n');
+        }
+        show(base + loc + stack);
       });
       window.addEventListener('unhandledrejection', function(e){
-        var r = e.reason; var txt = (r && (r.stack || r.message || r.toString())) || 'unknown promise rejection';
+        var r = e.reason;
+        var txt = (r && (r.stack || r.message || r.toString())) || 'unknown promise rejection';
         show('UnhandledRejection: ' + txt);
       });
     })();

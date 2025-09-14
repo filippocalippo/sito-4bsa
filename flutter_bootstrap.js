@@ -41,21 +41,47 @@ _flutter.buildConfig = {"engineRevision":"251f4a8d5b9f2577212b94379c1711dbdf4b7a
 
 
 (function() {
-  // Force a stable renderer on all browsers. canvaskit is the default-compatible one.
-  const userConfig = { renderer: 'canvaskit' };
+  // Let Flutter auto-detect the best renderer for iOS Safari compatibility
+  const userConfig = {};
 
-  // Optional: surface bootstrap progress in console for debugging
+  // Enhanced error handling for iOS Safari compatibility
   _flutter.loader.load({
     config: userConfig,
     onEntrypointLoaded: async function(engineInitializer) {
       try {
         console.log('[bootstrap] Initializing engine...');
-        const appRunner = await engineInitializer.initializeEngine();
+        const appRunner = await engineInitializer.initializeEngine({
+          // Additional iOS Safari compatibility settings
+          canvasKitBaseUrl: "./canvaskit/",
+          hostElement: document.body,
+        });
         console.log('[bootstrap] Running app...');
         await appRunner.runApp();
         console.log('[bootstrap] App started.');
       } catch (e) {
         console.error('[bootstrap] Failed to start app:', e);
+        // Show user-friendly error message on iOS Safari
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = `
+          position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+          background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          max-width: 90%; text-align: center; z-index: 9999; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        `;
+        errorDiv.innerHTML = `
+          <h3 style="color: #d32f2f; margin: 0 0 10px;">App Loading Error</h3>
+          <p style="margin: 0; color: #666;">
+            Please try refreshing the page or using a different browser.
+            <br><small>If you're on iOS, try disabling Private Mode.</small>
+          </p>
+        `;
+        document.body.appendChild(errorDiv);
+        
+        // Auto-remove error after 10 seconds
+        setTimeout(() => {
+          if (errorDiv.parentNode) {
+            errorDiv.parentNode.removeChild(errorDiv);
+          }
+        }, 10000);
       }
     }
   });
