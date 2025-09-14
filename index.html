@@ -68,6 +68,30 @@
       wrap('clear');
     })();
   </script>
+  <!-- Minimal on-screen error overlay to diagnose iOS Safari issues -->
+  <style>
+    #flutter-error-overlay { position: fixed; bottom: 8px; left: 8px; right: 8px; max-height: 40vh; overflow:auto; background: rgba(0,0,0,0.8); color: #fff; font: 12px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif; padding: 8px 10px; border-radius: 8px; z-index: 99999; display:none; }
+    #flutter-error-overlay b { color: #ffb4b4; }
+  </style>
+  <script>
+    (function(){
+      var el = document.createElement('div');
+      el.id = 'flutter-error-overlay';
+      document.addEventListener('DOMContentLoaded', function(){ document.body.appendChild(el); });
+      function show(msg){
+        el.style.display = 'block';
+        var now = new Date().toISOString().split('T')[1].split('.')[0];
+        el.innerHTML += '<div><b>['+now+']</b> ' + msg + '</div>';
+      }
+      window.addEventListener('error', function(e){
+        show('Error: ' + (e.message || e.error || 'unknown') + ' at ' + (e.filename||'') + ':' + (e.lineno||'') + ':' + (e.colno||''));
+      });
+      window.addEventListener('unhandledrejection', function(e){
+        var r = e.reason; var txt = (r && (r.stack || r.message || r.toString())) || 'unknown promise rejection';
+        show('UnhandledRejection: ' + txt);
+      });
+    })();
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
