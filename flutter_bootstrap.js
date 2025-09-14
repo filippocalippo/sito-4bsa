@@ -50,38 +50,50 @@ _flutter.buildConfig = {"engineRevision":"251f4a8d5b9f2577212b94379c1711dbdf4b7a
     onEntrypointLoaded: async function(engineInitializer) {
       try {
         console.log('[bootstrap] Initializing engine...');
+        
+        // Hide loading screen when engine starts
+        const loadingEl = document.getElementById('loading');
+        if (loadingEl) {
+          loadingEl.style.display = 'none';
+        }
+        
         const appRunner = await engineInitializer.initializeEngine({
-          // Additional iOS Safari compatibility settings
-          canvasKitBaseUrl: "./canvaskit/",
+          // Minimal config for better iOS Safari compatibility
           hostElement: document.body,
         });
         console.log('[bootstrap] Running app...');
         await appRunner.runApp();
         console.log('[bootstrap] App started.');
+        
       } catch (e) {
         console.error('[bootstrap] Failed to start app:', e);
+        
+        // Hide loading screen on error
+        const loadingEl = document.getElementById('loading');
+        if (loadingEl) {
+          loadingEl.style.display = 'none';
+        }
+        
         // Show user-friendly error message on iOS Safari
         const errorDiv = document.createElement('div');
         errorDiv.style.cssText = `
           position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
           background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-          max-width: 90%; text-align: center; z-index: 9999; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+          max-width: 90%; text-align: center; z-index: 99999; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+          border: 1px solid #ddd;
         `;
         errorDiv.innerHTML = `
           <h3 style="color: #d32f2f; margin: 0 0 10px;">App Loading Error</h3>
           <p style="margin: 0; color: #666;">
-            Please try refreshing the page or using a different browser.
-            <br><small>If you're on iOS, try disabling Private Mode.</small>
+            Please try refreshing the page or clearing browser cache.
+            <br><small>iOS Safari: Try disabling Private Mode or use a different browser.</small>
           </p>
+          <button onclick="window.location.reload()" style="
+            margin-top: 15px; padding: 8px 16px; background: #0ea5e9; color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-size: 14px;
+          ">Refresh Page</button>
         `;
         document.body.appendChild(errorDiv);
-        
-        // Auto-remove error after 10 seconds
-        setTimeout(() => {
-          if (errorDiv.parentNode) {
-            errorDiv.parentNode.removeChild(errorDiv);
-          }
-        }, 10000);
       }
     }
   });
