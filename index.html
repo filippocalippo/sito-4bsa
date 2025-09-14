@@ -41,12 +41,15 @@
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
+          serviceWorkerVersion: null,
+        },
+        onEntrypointLoaded: function(engineInitializer) {
+          engineInitializer.initializeEngine({
+            renderer: 'html' // Force HTML renderer
+          }).then(function(appRunner) {
+            appRunner.runApp();
+          });
         }
-      }).then(function(engineInitializer) {
-        return engineInitializer.initializeEngine({ renderer: 'html' });
-      }).then(function(appRunner) {
-        return appRunner.runApp();
       });
     });
   </script>
