@@ -36,4 +36,8 @@ if (!window._flutter) {
 }
 _flutter.buildConfig = {"engineRevision":"251f4a8d5b9f2577212b94379c1711dbdf4b7a7a","builds":[{"compileTarget":"dart2js","renderer":"canvaskit","mainJsPath":"main.dart.js"},{}]};
 
-_flutter.loader.load();
+_flutter.loader.load({
+  serviceWorkerSettings: {
+    serviceWorkerVersion: "3772942263"
+  }
+});
