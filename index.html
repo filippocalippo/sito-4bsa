@@ -53,8 +53,8 @@
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
         onEntrypointLoaded: function(engineInitializer) {
-          // Force HTML renderer for maximum compatibility on iOS Safari
-          engineInitializer.initializeEngine({ renderer: 'html' }).then(function(appRunner) {
+          // Use default renderer (CanvasKit) for optimal performance
+          engineInitializer.initializeEngine().then(function(appRunner) {
             appRunner.runApp();
           }).catch(function(e){
             console.error('Flutter engine init failed:', e);
